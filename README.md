@@ -1,4 +1,4 @@
-# docker-collectd-plugin
+# collectd-iptables-accounting
 
 A iptables plugin for [collectd](http://collectd.org)
 using collectd's
@@ -27,7 +27,7 @@ LoadPlugin python
   Import "accounting"
 
   <Module accounting>
-      CHAIN_NAMES "TRAFFIC_ACCT_OUT" "TRAFFIC_ACCT_IN"
+    CHAIN_NAMES "TRAFFIC_ACCT_OUT" "TRAFFIC_ACCT_IN"
   </Module>
 </Plugin>
 ```
@@ -35,3 +35,5 @@ LoadPlugin python
 ## Requirements
 
 * python-dateutil
+* python-iptables
+* pymongo
