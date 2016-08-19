@@ -51,7 +51,7 @@ class TrafficStats(Stats):
         diff_data={}
         if cursor.count() == 0:
             # empty dataset, insert the first one
-	    collectd.info('Accounting: init values for ' + chain_name)
+            collectd.info('Accounting: init values for ' + chain_name)
             diff_data = raw_data
 
             temp = {}
@@ -68,6 +68,7 @@ class TrafficStats(Stats):
                 if key in diff_data:
                     # counter reseted?
                     if new_data[key] < old_data[key]:
+                        collectd.info('Accounting: RESETed? init values for ' + chain_name)
                         diff_data[key] = new_data[key]
                     else:
                         diff_data[key] = new_data[key] - old_data[key]
@@ -107,7 +108,7 @@ class accounting:
         for node in conf.children:
             if node.key == 'CHAIN_NAMES':
                 self.chain_names = node.values
-	        collectd.info('Accounting: Starting stats gathering for ' + ', '.join (self.chain_names))
+                collectd.info('Accounting: Starting stats gathering for ' + ', '.join (self.chain_names))
 
     def init_callback(self):
         collectd.register_read(self.read_callback)
@@ -131,7 +132,10 @@ def getRawData (chain_name):
         for rule in chain.rules:
             (junk, bytes) = rule.get_counters()
             port = rule.matches[0].sport or rule.matches[0].dport
-            raw_data[port] = bytes
+            if port in raw_data: 
+                raw_data[port] = bytes + raw_data[port]
+            else:
+                raw_data[port] = bytes
 
     return raw_data
 
@@ -156,7 +160,7 @@ if __name__ == '__main__':
             if getattr(self, 'type_instance', None):
                 identifier += '-' + self.type_instance
             print 'PUTVAL', identifier, \
-                  ':'.join(map(str, [int(self.time)] + self.values))
+                    ':'.join(map(str, [int(self.time)] + self.values))
 
     class ExecCollectd:
         def Values(self):
