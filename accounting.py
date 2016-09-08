@@ -46,7 +46,7 @@ class TrafficStats(Stats):
     @classmethod
     def read(cls, chain_name, raw_data, t = None):
 
-        cursor = db[chain_name].find({'updateTime':datetime.datetime.fromtimestamp(0)})
+        cursor = db[chain_name].find({'updateTime':datetime.datetime.fromtimestamp(9999999999)})
 
         diff_data={}
         if cursor.count() == 0:
@@ -56,8 +56,10 @@ class TrafficStats(Stats):
 
             temp = {}
             temp['raw_data']=raw_data
-            temp['updateTime'] = datetime.datetime.fromtimestamp(0)
+            temp['updateTime'] = datetime.datetime.fromtimestamp(9999999999)
             db[chain_name].insert(temp)
+
+            db[chain_name].create_index( "updateTime", expireAfterSeconds= 864000 )
         else:
             # diff from last time
             old_data = cursor[0]['raw_data']
@@ -79,8 +81,8 @@ class TrafficStats(Stats):
             # update the 'latest' counter
             temp = {}
             temp['raw_data'] = old_data
-            temp['updateTime'] = datetime.datetime.fromtimestamp(0)
-            db[chain_name].replace_one({'updateTime':datetime.datetime.fromtimestamp(0)},temp)
+            temp['updateTime'] = datetime.datetime.fromtimestamp(9999999999)
+            db[chain_name].replace_one({'updateTime':datetime.datetime.fromtimestamp(9999999999)},temp)
 
 
         # save the new data into mongodb
@@ -160,7 +162,7 @@ if __name__ == '__main__':
             if getattr(self, 'type_instance', None):
                 identifier += '-' + self.type_instance
             print 'PUTVAL', identifier, \
-                    ':'.join(map(str, [int(self.time)] + self.values))
+                  ':'.join(map(str, [int(self.time)] + self.values))
 
     class ExecCollectd:
         def Values(self):
