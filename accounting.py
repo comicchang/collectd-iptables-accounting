@@ -46,8 +46,6 @@ class TrafficStats(Stats):
     @classmethod
     def read(cls, chain_name, raw_data, t = None):
 
-        diff_data={}
-
         if not chain_name in total_traffic:
             # empty dataset, insert the first one
             collectd.info('Accounting: init values for ' + chain_name)
@@ -57,23 +55,17 @@ class TrafficStats(Stats):
             old_data = total_traffic[chain_name]
             new_data = raw_data
 
-            diff_data = copy.deepcopy(old_data)
+            diff_data = copy.deepcopy(new_data)
             for key in new_data.keys():
-                if key in diff_data:
-                    # counter reseted?
-                    if new_data[key] < old_data[key]:
-                        collectd.info('Accounting: iptables been reseted? init values for ' + chain_name)
-                        diff_data[key] = new_data[key]
-                    else:
+                if key in old_data:
+                    if new_data[key] > old_data[key]:
                         diff_data[key] = new_data[key] - old_data[key]
-                else:
-                    diff_data[key] = new_data[key]
 
         total_traffic[chain_name] = raw_data
 
 
         for key in diff_data.keys():
-            cls.emit(chain_name, 'iptables-bytes', [diff_data[key]], t=None, type_instance=key)
+            cls.emit(chain_name, 'traffic', [diff_data[key]], t=None, type_instance=key)
 
 
 class accounting:

@@ -1,1 +1,1 @@
-iptables-bytes value:GAUGE:0:U
+traffic value:GAUGE:0:U
