@@ -1,16 +1,19 @@
 #!/bin/bash
 
-iptables -F TRAFFIC_ACCT_IN
-iptables -F TRAFFIC_ACCT_OUT
-iptables -N TRAFFIC_ACCT_IN
-iptables -N TRAFFIC_ACCT_OUT
-iptables -I INPUT -j TRAFFIC_ACCT_IN
-iptables -I OUTPUT -j TRAFFIC_ACCT_OUT
+##traffic accounting
+iptables -N ACCOUNTING_INPUT_CHAIN
+iptables -N ACCOUNTING_OUTPUT_CHAIN
 
-ARRAY=(82 8123 80 443 22)
+iptables -I INPUT -j ACCOUNTING_INPUT_CHAIN
+iptables -I OUTPUT -j ACCOUNTING_OUTPUT_CHAIN
+
+ARRAY=(`seq 2 15` `seq 20 31` `seq 251 254`)
 for i in ${ARRAY[@]}; do
-         iptables -I TRAFFIC_ACCT_OUT -p tcp --sport $i -m comment --comment "port $i TCP download"
-         iptables -I TRAFFIC_ACCT_OUT -p udp --sport $i -m comment --comment "port $i UDP download"
-         iptables -I TRAFFIC_ACCT_IN  -p tcp --dport $i -m comment --comment "port $i TCP upload"
-         iptables -I TRAFFIC_ACCT_IN  -p udp --dport $i -m comment --comment "port $i UDP upload"
+	iptables -A ACCOUNTING_INPUT_CHAIN -s 192.168.234.$i/32 -j RETURN
+	iptables -A ACCOUNTING_OUTPUT_CHAIN -d 192.168.234.$i/32 -j RETURN
 done
+iptables -A ACCOUNTING_INPUT_CHAIN -s 192.168.234.0/24 -j RETURN
+iptables -A ACCOUNTING_OUTPUT_CHAIN -d 192.168.234.0/24 -j RETURN
+
+iptables -A ACCOUNTING_INPUT_CHAIN -j RETURN
+iptables -A ACCOUNTING_OUTPUT_CHAIN -j RETURN

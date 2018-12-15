@@ -8,7 +8,7 @@ using collectd's
 
 1. Checkout this repository somewhere on your system accessible by
    collectd; for example as
-   `/usr/share/collectd/docker-iptables-accounting`.
+   `/usr/share/collectd/collectd-iptables-accounting`.
 1. Install the Python requirements with `pip install -r
    requirements.txt`.
 1. Configure the plugin (see below).
@@ -19,11 +19,11 @@ using collectd's
 Add the following to your collectd config:
 
 ```
-TypesDB "/usr/share/collectd/docker-iptables-accounting/accounting.db"
+TypesDB "/usr/share/collectd/collectd-iptables-accounting/accounting.db"
 LoadPlugin python
 
 <Plugin python>
-  ModulePath "/usr/share/collectd/docker-iptables-accounting"
+  ModulePath "/usr/share/collectd/collectd-iptables-accounting"
   Import "accounting"
 
   <Module accounting>
@@ -36,4 +36,3 @@ LoadPlugin python
 
 * python-dateutil
 * python-iptables
-* pymongo

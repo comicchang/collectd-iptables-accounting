@@ -10,7 +10,7 @@ import copy
 import iptc
 import sys
 import os
-from pymongo import MongoClient
+import pickle
 
 class Stats:
     @classmethod
@@ -46,23 +46,15 @@ class TrafficStats(Stats):
     @classmethod
     def read(cls, chain_name, raw_data, t = None):
 
-        cursor = db[chain_name].find({'updateTime':datetime.datetime.fromtimestamp(9999999999)})
-
         diff_data={}
-        if cursor.count() == 0:
+
+        if not chain_name in total_traffic:
             # empty dataset, insert the first one
             collectd.info('Accounting: init values for ' + chain_name)
             diff_data = raw_data
-
-            temp = {}
-            temp['raw_data']=raw_data
-            temp['updateTime'] = datetime.datetime.fromtimestamp(9999999999)
-            db[chain_name].insert(temp)
-
-            db[chain_name].create_index( "updateTime", expireAfterSeconds= 864000 )
         else:
             # diff from last time
-            old_data = cursor[0]['raw_data']
+            old_data = total_traffic[chain_name]
             new_data = raw_data
 
             diff_data = copy.deepcopy(old_data)
@@ -70,26 +62,15 @@ class TrafficStats(Stats):
                 if key in diff_data:
                     # counter reseted?
                     if new_data[key] < old_data[key]:
-                        collectd.info('Accounting: RESETed? init values for ' + chain_name)
+                        collectd.info('Accounting: iptables been reseted? init values for ' + chain_name)
                         diff_data[key] = new_data[key]
                     else:
                         diff_data[key] = new_data[key] - old_data[key]
                 else:
                     diff_data[key] = new_data[key]
-                old_data[key] = new_data[key]
 
-            # update the 'latest' counter
-            temp = {}
-            temp['raw_data'] = old_data
-            temp['updateTime'] = datetime.datetime.fromtimestamp(9999999999)
-            db[chain_name].replace_one({'updateTime':datetime.datetime.fromtimestamp(9999999999)},temp)
+        total_traffic[chain_name] = raw_data
 
-
-        # save the new data into mongodb
-        temp = {}
-        temp['raw_data'] = raw_data
-        temp['updateTime'] = datetime.datetime.now()
-        db[chain_name].insert (temp)
 
         for key in diff_data.keys():
             cls.emit(chain_name, 'iptables-bytes', [diff_data[key]], t=None, type_instance=key)
@@ -99,7 +80,7 @@ class accounting:
     """
     CollectD plugin for collecting iptables traffic
     """
-    DEFAULT_CHAIN_NAMES = ['INPUT', 'OUTPUT']
+    DEFAULT_CHAIN_NAMES = ['ACCOUNTING_INPUT_CHAIN', 'ACCOUNTING_OUTPUT_CHAIN']
 
     def __init__(self, chain_names=None):
         self.chain_names = chain_names or accounting.DEFAULT_CHAIN_NAMES
@@ -124,6 +105,11 @@ class accounting:
             rawData = getRawData(chain_name)
             TrafficStats.read (chain_name, rawData)
 
+        # save the new data 
+        f = open('accounting.pickle', 'wb+')
+        pickle.dump(total_traffic, f)
+        f.close()
+
 
 def getRawData (chain_name):
     if True:
@@ -133,21 +119,29 @@ def getRawData (chain_name):
         raw_data = {}
         for rule in chain.rules:
             (junk, bytes) = rule.get_counters()
-            port = rule.matches[0].sport or rule.matches[0].dport
-            if port in raw_data: 
-                raw_data[port] = bytes + raw_data[port]
+            if (not rule.src.split('/')[1]  == "0.0.0.0"):
+                host = rule.src.split('/')[0] 
             else:
-                raw_data[port] = bytes
+                host = rule.dst.split('/')[0]
+            raw_data[host] = bytes
 
     return raw_data
 
 
 
+try:
+    f = open('accounting.pickle', 'rb')
+    total_traffic = pickle.load(f)
+    print ("load successful")
+except:
+    total_traffic = {}
 
 
+try:
+    close (f)
+except:
+    pass
 
-client = MongoClient()
-db = client.accounting
 
 # Command-line execution
 if __name__ == '__main__':
@@ -161,18 +155,18 @@ if __name__ == '__main__':
             identifier += '/' + self.type
             if getattr(self, 'type_instance', None):
                 identifier += '-' + self.type_instance
-            print 'PUTVAL', identifier, \
-                  ':'.join(map(str, [int(self.time)] + self.values))
+            print ('PUTVAL', identifier, \
+                  ':'.join(map(str, [int(self.time)] + self.values)))
 
     class ExecCollectd:
         def Values(self):
             return ExecCollectdValues()
 
         def warning(self, msg):
-            print 'WARNING:', msg
+            print ('WARNING:', msg)
 
         def info(self, msg):
-            print 'INFO:', msg
+            print ('INFO:', msg)
 
         def register_read(self, docker_plugin):
             pass
