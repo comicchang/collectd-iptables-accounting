@@ -63,7 +63,6 @@ class TrafficStats(Stats):
 
         total_traffic[chain_name] = raw_data
 
-
         for key in diff_data.keys():
             cls.emit(chain_name, 'traffic', [diff_data[key]], t=None, type_instance=key)
 
@@ -98,7 +97,7 @@ class accounting:
             TrafficStats.read (chain_name, rawData)
 
         # save the new data 
-        f = open('accounting.pickle', 'wb+')
+        f = open('accounting.pickle', 'wb')
         pickle.dump(total_traffic, f)
         f.close()
 
@@ -111,29 +110,13 @@ def getRawData (chain_name):
         raw_data = {}
         for rule in chain.rules:
             (junk, bytes) = rule.get_counters()
-            if (not rule.src.split('/')[1]  == "0.0.0.0"):
+            if (rule.src.split('/')[1]  == "255.255.255.255"):
                 host = rule.src.split('/')[0] 
             else:
                 host = rule.dst.split('/')[0]
             raw_data[host] = bytes
 
     return raw_data
-
-
-
-try:
-    f = open('accounting.pickle', 'rb')
-    total_traffic = pickle.load(f)
-    print ("load successful")
-except:
-    total_traffic = {}
-
-
-try:
-    close (f)
-except:
-    pass
-
 
 # Command-line execution
 if __name__ == '__main__':
@@ -165,6 +148,21 @@ if __name__ == '__main__':
 
     collectd = ExecCollectd()
     plugin = accounting()
+
+    try:
+        f = open('accounting.pickle', 'rb')
+        total_traffic = pickle.load(f)
+        collectd.info("load successful")
+    except:
+        total_traffic = {}
+        collectd.info("load failed")
+
+    try:
+        close (f)
+    except:
+        pass
+
+
     if len(sys.argv) > 1:
         plugin.chain_names = sys.argv[1:]
 
@@ -174,6 +172,21 @@ if __name__ == '__main__':
 # Normal plugin execution via CollectD
 else:
     import collectd
+    try:
+        #why???
+        f = open('/var/lib/collectd/accounting.pickle', 'rb')
+        total_traffic = pickle.load(f)
+        collectd.info("load successful")
+    except:
+        total_traffic = {}
+        collectd.info("load failed")
+        
+
+    try:
+        close (f)
+    except:
+        pass
+
     plugin = accounting()
     collectd.register_config(plugin.configure_callback)
     collectd.register_init(plugin.init_callback)
