@@ -229,6 +229,8 @@
         "rightSide": true,
         "show": true,
         "sideWidth": 230,
+        "sort": "avg",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -315,6 +317,8 @@
         "rightSide": true,
         "show": true,
         "sideWidth": 230,
+        "sort": "avg",
+        "sortDesc": true,
         "total": false,
         "values": true
       },
@@ -414,6 +418,8 @@
         "rightSide": true,
         "show": true,
         "sideWidth": 230,
+        "sort": "total",
+        "sortDesc": true,
         "total": true,
         "values": true
       },
@@ -432,7 +438,8 @@
       "targets": [
         {
           "refId": "A",
-          "target": "aliasSub(cumulative(sortByTotal(router_ooxxcc_com.accounting-ACCOUNTING_OUTPUT_CHAIN.*)), '.*traffic-(.*),.*', '\\1')"
+          "target": "aliasSub(cumulative(router_ooxxcc_com.accounting-ACCOUNTING_OUTPUT_CHAIN.*), '.*traffic-(.*),.*', '\\1')",
+          "textEditor": false
         }
       ],
       "thresholds": [],
@@ -442,7 +449,7 @@
       "title": "download",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -499,6 +506,8 @@
         "rightSide": true,
         "show": true,
         "sideWidth": 230,
+        "sort": "total",
+        "sortDesc": true,
         "total": true,
         "values": true
       },
@@ -517,7 +526,7 @@
       "targets": [
         {
           "refId": "A",
-          "target": "aliasSub(cumulative(sortByTotal(router_ooxxcc_com.accounting-ACCOUNTING_INPUT_CHAIN.*)), '.*traffic-(.*),.*', '\\1')"
+          "target": "aliasSub(cumulative(router_ooxxcc_com.accounting-ACCOUNTING_INPUT_CHAIN.*), '.*traffic-(.*),.*', '\\1')"
         }
       ],
       "thresholds": [],
@@ -527,7 +536,7 @@
       "title": "upload",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -601,5 +610,5 @@
   "timezone": "",
   "title": "1-Router Dashboard",
   "uid": "IITxTuEmk",
-  "version": 18
+  "version": 32
 }

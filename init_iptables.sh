@@ -14,4 +14,3 @@ for ip in ${ARRAY[@]}; do
     iptables -A ACCOUNTING_OUTPUT_CHAIN ! -s 192.168.234.0/24 -d $ip/32 -j RETURN
 done
 
-

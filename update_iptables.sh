@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#update accounting hosts
+#should run periodly
+
 ARRAY=(`cat /proc/net/arp | grep : | grep ^192 | grep -v 00:00:00:00:00:00| awk '{print $1}'`)
 oldtable=`iptables -L ACCOUNTING_INPUT_CHAIN -xn`
 

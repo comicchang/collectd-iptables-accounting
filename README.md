@@ -4,6 +4,9 @@ A iptables plugin for [collectd](http://collectd.org)
 using collectd's
 [Python plugin](http://collectd.org/documentation/manpages/collectd-python.5.shtml).
 
+## Screenshot
+![screenshot](screenshot.png)
+
 ## Install
 
 1. Checkout this repository somewhere on your system accessible by
