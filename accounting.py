@@ -58,8 +58,13 @@ class TrafficStats(Stats):
             diff_data = copy.deepcopy(new_data)
             for key in new_data.keys():
                 if key in old_data:
-                    if new_data[key] > old_data[key]:
+                    if new_data[key] >= old_data[key]:
                         diff_data[key] = new_data[key] - old_data[key]
+                    else:
+                        collectd.info('Accounting: value changed, maybe a reset? ' + chain_name + key)
+                else:
+                    collectd.info('Accounting: new client added? ' + chain_name + key)
+
 
         total_traffic[chain_name] = raw_data
 
