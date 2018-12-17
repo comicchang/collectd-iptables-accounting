@@ -9,9 +9,9 @@ using collectd's
 1. Checkout this repository somewhere on your system accessible by
    collectd; for example as
    `/usr/share/collectd/collectd-iptables-accounting`.
-1. Install the Python requirements with `pip install -r
-   requirements.txt`.
+1. Install the Python requirements with `pip install -r requirements.txt`.
 1. Configure the plugin (see below).
+1. Configure iptables (see init_iptables.sh and update_iptables.sh)
 1. Restart collectd.
 
 ## Configuration
