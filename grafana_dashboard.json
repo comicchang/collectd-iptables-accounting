@@ -36,6 +36,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -56,7 +57,8 @@
       "lines": true,
       "linewidth": 1,
       "links": [],
-      "nullPointMode": "null",
+      "nullPointMode": "connected",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -67,8 +69,46 @@
       "steppedLine": false,
       "targets": [
         {
-          "refId": "A",
-          "target": "router_ooxxcc_com.load.*.*"
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "load_shortterm",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -117,6 +157,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -138,6 +179,7 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -148,8 +190,46 @@
       "steppedLine": false,
       "targets": [
         {
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "memory_value",
+          "orderByTime": "ASC",
+          "policy": "default",
           "refId": "A",
-          "target": "router_ooxxcc_com.memory.*"
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -172,7 +252,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "bytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -208,13 +288,14 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 8,
-        "w": 24,
+        "w": 12,
         "x": 0,
         "y": 9
       },
@@ -223,34 +304,84 @@
         "alignAsTable": true,
         "avg": true,
         "current": false,
+        "hideEmpty": true,
         "hideZero": true,
         "max": false,
         "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 230,
+        "sideWidth": 150,
         "sort": "avg",
         "sortDesc": true,
         "total": false,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
+          "alias": "[[tag_instance]]",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "instance"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "interface_rx",
+          "orderByTime": "ASC",
+          "policy": "default",
           "refId": "A",
-          "target": "aliasSub(router_ooxxcc_com.interface-*.if_octets.rx, '.*interface-(.*).if.*', '\\1')",
-          "textEditor": false
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -260,7 +391,7 @@
       "title": "Rx Bytes",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -296,49 +427,100 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 17
+        "w": 12,
+        "x": 12,
+        "y": 9
       },
-      "id": 13,
+      "id": 18,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": false,
+        "hideEmpty": true,
         "hideZero": true,
         "max": false,
         "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 230,
+        "sideWidth": 150,
         "sort": "avg",
         "sortDesc": true,
         "total": false,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
+          "alias": "[[tag_instance]]",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "instance"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "interface_tx",
+          "orderByTime": "ASC",
+          "policy": "default",
           "refId": "A",
-          "target": "aliasSub(router_ooxxcc_com.interface-*.if_octets.tx, '.*interface-(.*).if.*', '\\1')",
-          "textEditor": false
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            }
+          ]
         }
       ],
       "thresholds": [],
@@ -348,7 +530,7 @@
       "title": "Tx Bytes",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -369,7 +551,7 @@
           "show": true
         },
         {
-          "format": "decbytes",
+          "format": "none",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -388,7 +570,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 17
       },
       "id": 2,
       "panels": [],
@@ -400,12 +582,13 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 18
       },
       "id": 16,
       "legend": {
@@ -417,7 +600,7 @@
         "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 230,
+        "sideWidth": null,
         "sort": "total",
         "sortDesc": true,
         "total": true,
@@ -427,6 +610,7 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -437,16 +621,70 @@
       "steppedLine": false,
       "targets": [
         {
+          "alias": "[[tag_type_instance]]",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "type_instance"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "accounting_value",
+          "orderByTime": "ASC",
+          "policy": "default",
           "refId": "A",
-          "target": "aliasSub(cumulative(router_ooxxcc_com.accounting-ACCOUNTING_OUTPUT_CHAIN.*), '.*traffic-(.*),.*', '\\1')",
-          "textEditor": false
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            },
+            {
+              "condition": "AND",
+              "key": "instance",
+              "operator": "=",
+              "value": "ACCOUNTING_OUTPUT_CHAIN"
+            }
+          ]
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "download",
+      "title": "Download",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -488,14 +726,15 @@
       "bars": true,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "InfluxDB",
       "fill": 1,
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 26
       },
-      "id": 17,
+      "id": 20,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -505,7 +744,7 @@
         "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 230,
+        "sideWidth": null,
         "sort": "total",
         "sortDesc": true,
         "total": true,
@@ -515,6 +754,7 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "paceLength": 10,
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -525,15 +765,70 @@
       "steppedLine": false,
       "targets": [
         {
+          "alias": "[[tag_type_instance]]",
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "type_instance"
+              ],
+              "type": "tag"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "accounting_value",
+          "orderByTime": "ASC",
+          "policy": "default",
           "refId": "A",
-          "target": "aliasSub(cumulative(router_ooxxcc_com.accounting-ACCOUNTING_INPUT_CHAIN.*), '.*traffic-(.*),.*', '\\1')"
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              },
+              {
+                "params": [],
+                "type": "non_negative_difference"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "host",
+              "operator": "=",
+              "value": "router.ooxxcc.com"
+            },
+            {
+              "condition": "AND",
+              "key": "instance",
+              "operator": "=",
+              "value": "ACCOUNTING_INPUT_CHAIN"
+            }
+          ]
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "upload",
+      "title": "Upload",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -572,14 +867,17 @@
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 16,
+  "schemaVersion": 18,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "router",
+    "traffic"
+  ],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -608,7 +906,7 @@
     ]
   },
   "timezone": "",
-  "title": "1-Router Dashboard",
+  "title": "5-Router Dashboard",
   "uid": "IITxTuEmk",
-  "version": 32
+  "version": 49
 }

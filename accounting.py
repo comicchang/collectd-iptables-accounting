@@ -46,30 +46,8 @@ class TrafficStats(Stats):
     @classmethod
     def read(cls, chain_name, raw_data, t = None):
 
-        if not chain_name in total_traffic:
-            # empty dataset, insert the first one
-            collectd.info('Accounting: init values for ' + chain_name)
-            diff_data = raw_data
-        else:
-            # diff from last time
-            old_data = total_traffic[chain_name]
-            new_data = raw_data
-
-            diff_data = copy.deepcopy(new_data)
-            for key in new_data.keys():
-                if key in old_data:
-                    if new_data[key] >= old_data[key]:
-                        diff_data[key] = new_data[key] - old_data[key]
-                    else:
-                        collectd.info('Accounting: value changed, maybe a reset? ' + chain_name + key)
-                else:
-                    collectd.info('Accounting: new client added? ' + chain_name + key)
-
-
-        total_traffic[chain_name] = raw_data
-
-        for key in diff_data.keys():
-            cls.emit(chain_name, 'traffic', [diff_data[key]], t=None, type_instance=key)
+        for key in raw_data.keys():
+            cls.emit(chain_name, 'traffic', [raw_data[key]], t=None, type_instance=key)
 
 
 class accounting:
@@ -100,12 +78,6 @@ class accounting:
             # Get and process stats from the iptable chains.
             rawData = getRawData(chain_name)
             TrafficStats.read (chain_name, rawData)
-
-        # save the new data 
-        f = open('accounting.pickle', 'wb')
-        pickle.dump(total_traffic, f)
-        f.close()
-
 
 def getRawData (chain_name):
     if True:
@@ -154,19 +126,6 @@ if __name__ == '__main__':
     collectd = ExecCollectd()
     plugin = accounting()
 
-    try:
-        f = open('accounting.pickle', 'rb')
-        total_traffic = pickle.load(f)
-        collectd.info("load successful")
-    except:
-        total_traffic = {}
-        collectd.info("load failed")
-
-    try:
-        close (f)
-    except:
-        pass
-
 
     if len(sys.argv) > 1:
         plugin.chain_names = sys.argv[1:]
@@ -177,20 +136,6 @@ if __name__ == '__main__':
 # Normal plugin execution via CollectD
 else:
     import collectd
-    try:
-        #why???
-        f = open('/var/lib/collectd/accounting.pickle', 'rb')
-        total_traffic = pickle.load(f)
-        collectd.info("load successful")
-    except:
-        total_traffic = {}
-        collectd.info("load failed")
-        
-
-    try:
-        close (f)
-    except:
-        pass
 
     plugin = accounting()
     collectd.register_config(plugin.configure_callback)
