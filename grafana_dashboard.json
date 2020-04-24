@@ -675,7 +675,7 @@
               "condition": "AND",
               "key": "instance",
               "operator": "=",
-              "value": "ACCOUNTING_OUTPUT_CHAIN"
+              "value": "ACCOUNTING_UPLOAD_CHAIN"
             }
           ]
         }
@@ -819,7 +819,7 @@
               "condition": "AND",
               "key": "instance",
               "operator": "=",
-              "value": "ACCOUNTING_INPUT_CHAIN"
+              "value": "ACCOUNTING_DOWNLOAD_CHAIN"
             }
           ]
         }

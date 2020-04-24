@@ -54,7 +54,7 @@ class accounting:
     """
     CollectD plugin for collecting iptables traffic
     """
-    DEFAULT_CHAIN_NAMES = ['ACCOUNTING_INPUT_CHAIN', 'ACCOUNTING_OUTPUT_CHAIN']
+    DEFAULT_CHAIN_NAMES = ['ACCOUNTING_DOWNLOAD_CHAIN', 'ACCOUNTING_UPLOAD_CHAIN']
 
     def __init__(self, chain_names=None):
         self.chain_names = chain_names or accounting.DEFAULT_CHAIN_NAMES
