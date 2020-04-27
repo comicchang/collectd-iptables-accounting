@@ -14,4 +14,3 @@ for ip in ${ARRAY[@]}; do
     fi
 done
 
--
